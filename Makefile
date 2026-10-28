@@ -9,7 +9,7 @@ VERSION:=0.5
 
 JAVA_VERSION?=1.7
 JAVA_HOME?=$(shell /usr/libexec/java_home -v $(JAVA_VERSION))
-JAVAH:=$(JAVA_HOME)/bin/javah
+JAVAC:=$(JAVA_HOME)/bin/javac
 JAVA_VERSION:=$(shell $(JAVA_HOME)/bin/javap -version)
 PKG_DIR:=net/trineo/xattr4j
 
@@ -17,12 +17,10 @@ CC?=gcc
 TIME_STAMP:=$(shell date +'%Y/%m/%d\ %H:%M:%S%z')
 CPPFLAGS+=-D__TS__=\"$(TIME_STAMP)\"
 
-#ARCHS?=-arch i386
-#ARCHS?=-arch x86_64
-ARCHS?=-arch i386 -arch x86_64 -arch x86_64h
+ARCHS?=-arch arm64
 MACOSX_VERSION_MIN?=10.6
 CFLAGS+=-Wall -Wextra -Wno-unused-parameter -std=c99 \
-	-shared $(ARCHS) -mmacosx-version-min=$(MACOSX_VERSION_MIN)
+	-shared -mmacosx-version-min=$(MACOSX_VERSION_MIN)
 
 SOURCE:=$(wildcard $(PKG_DIR)/*.c)
 LIBNAME:=$(PKG_DIR)/libxattr4j.dylib
@@ -32,9 +30,9 @@ PREFIX?=$(HOME)/Library/Java/Extensions
 all: jar-debug
 
 javac:
-	$(JAVAH) net.trineo.xattr4j.XAttr4J
+	$(JAVAC) -h . net/trineo/xattr4j/XAttr4J.java
 	mv net_trineo_xattr4j_XAttr4J.h $(PKG_DIR)/xattr4j_jni.h
-	$(JAVA_HOME)/bin/javac -Xlint $(PKG_DIR)/XAttr4J.java $(PKG_DIR)/LibLoader.java
+	$(JAVAC) -Xlint $(PKG_DIR)/XAttr4J.java $(PKG_DIR)/LibLoader.java
 
 jni-core: I1 = $(JAVA_HOME)/include
 jni-core: I2 = $(JAVA_HOME)/include/darwin
